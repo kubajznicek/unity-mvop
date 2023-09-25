@@ -5,10 +5,22 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
+    [Header("Reference")]
     public Transform playerObject;
     public Transform camera;
+    public CharacterController CharacterController;
+
+    [Header("Rychlosti")]
     public float lookSpeed = 5f;
     public float moveSpeed = 10f;
+
+    [Header("Gravitace")]
+    public float Gravity;
+    public float JumpIntensity = 5;
+
+
+    float yVelocity = 0f;
+
 
 
     void Start() {
@@ -30,27 +42,43 @@ public class Player : MonoBehaviour
 
         Vector3 movementDirection = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.W))
+
+        #region wsad
+            if (Input.GetKey(KeyCode.W))
+            {
+                movementDirection += playerObject.forward;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                movementDirection -= playerObject.right;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                movementDirection -= playerObject.forward;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                movementDirection += playerObject.right;
+            }
+        #endregion
+
+        if (CharacterController.isGrounded)
         {
-            movementDirection += playerObject.forward;
+            yVelocity = 0;
         }
-        if (Input.GetKey(KeyCode.A))
+
+        if (Input.GetKey(KeyCode.Space) && CharacterController.isGrounded)
         {
-            movementDirection -= playerObject.right;
+            yVelocity = JumpIntensity;
         }
-        if (Input.GetKey(KeyCode.S))
-        {
-            movementDirection -= playerObject.forward;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            movementDirection += playerObject.right;
-        }
+
+        yVelocity -= Gravity * Time.deltaTime;
+
+
+        movementDirection.y = yVelocity;
 
         movementDirection.Normalize();
-        movementDirection *= moveSpeed * Time.deltaTime;
 
-        playerObject.position += movementDirection;
-
+        CharacterController.Move(movementDirection* Time.deltaTime * moveSpeed);
     }
 }
