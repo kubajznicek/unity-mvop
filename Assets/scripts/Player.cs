@@ -7,8 +7,9 @@ public class Player : MonoBehaviour
 
     [Header("Reference")]
     public Transform playerObject;
-    public Transform camera;
+    public Transform Camera;
     public CharacterController CharacterController;
+    public GameObject Turret;
 
     [Header("Rychlosti")]
     public float lookSpeed = 5f;
@@ -27,21 +28,8 @@ public class Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        // mouse move
-        float mouseY = Input.GetAxis("Mouse Y");
-        float mouseX = Input.GetAxis("Mouse X");
-
-        camera.eulerAngles += new Vector3(-mouseY, 0, 0) * lookSpeed;
-        playerObject.eulerAngles += new Vector3(0, mouseX, 0) * lookSpeed;
-        
-        // keyboard triggers
-
+    void PlayerMove(){
         Vector3 movementDirection = Vector3.zero;
-
 
         #region wsad
             if (Input.GetKey(KeyCode.W))
@@ -80,5 +68,84 @@ public class Player : MonoBehaviour
         movementDirection.Normalize();
 
         CharacterController.Move(movementDirection* Time.deltaTime * moveSpeed);
+    }
+
+
+    void PlaceTurret(){
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.transform.position, Camera.forward, out hit, Mathf.Infinity)){
+            GameObject TurretSpawn = Instantiate(Turret);
+
+            TurretSpawn.transform.position = hit.point;
+            Vector3 up = hit.normal.normalized;
+            Vector3 forward = Vector3.Cross(Camera.right, up).normalized;
+            Vector3 right = Vector3.Cross(up, forward).normalized;
+
+            Debug.Log("up" + up);
+            Debug.Log("forward" + forward);
+            Debug.Log("right" + right);
+
+            Debug.Log(Quaternion.FromToRotation(forward, right));
+
+            
+
+            TurretSpawn.transform.rotation = Quaternion.LookRotation(forward, up);
+        } 
+
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        // keyboard triggers
+        PlayerMove();
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            PlaceTurret();
+        }
+
+        // mouse move
+        float mouseY = Input.GetAxis("Mouse Y");
+        float mouseX = Input.GetAxis("Mouse X");
+
+        Camera.eulerAngles += new Vector3(-mouseY, 0, 0) * lookSpeed;
+        playerObject.eulerAngles += new Vector3(0, mouseX, 0) * lookSpeed;
+        
+        
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(new Ray(Camera.transform.position, Camera.forward));
+
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.transform.position, Camera.forward, out hit, Mathf.Infinity))
+        {
+            // draw hit target
+            Gizmos.color = Color.white;
+            Gizmos.DrawSphere(hit.point, 0.1f);
+
+            // draw bullet landing normal
+            Gizmos.color = Color.green;
+            Vector3 up = hit.normal.normalized;
+            Gizmos.DrawRay(hit.point, up);
+
+            Gizmos.color = Color.cyan;
+            Vector3 forward = Vector3.Cross(Camera.right, up).normalized;
+            Gizmos.DrawRay(hit.point, forward);
+
+            Gizmos.color = Color.red;
+            Vector3 right = Vector3.Cross(up, forward).normalized;
+            Gizmos.DrawRay(hit.point, right);
+
+
+            // draw cube
+            Gizmos.color = Color.white;
+            Gizmos.matrix = Matrix4x4.TRS(hit.point, Quaternion.LookRotation(forward, up), Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+        }
     }
 }

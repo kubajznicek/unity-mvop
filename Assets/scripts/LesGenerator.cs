@@ -32,7 +32,7 @@ public class LesGenerator : MonoBehaviour
         float rotation = Random.Range(0, 360);
 
         treeSpawn.transform.position = new Vector3(x, y, z);
-        treeSpawn.transform.eulerAngles = new Vector3(0, rotation, 0);
+        treeSpawn.transform.eulerAngles = new Vector3(0, rotation, 0); // x y z
 
         float sx = Random.Range(0.9f, 1.1f);
         float sy = Random.Range(0.9f, 1.1f);
