@@ -73,25 +73,25 @@ public class Player : MonoBehaviour
 
     void PlaceTurret(){
         RaycastHit hit;
-        if (Physics.Raycast(Camera.transform.position, Camera.forward, out hit, Mathf.Infinity)){
-            GameObject TurretSpawn = Instantiate(Turret);
-
-            TurretSpawn.transform.position = hit.point;
+        if (Physics.Raycast(Camera.transform.position, Camera.forward, out hit, Mathf.Infinity) && hit.collider.tag == "floor"){
             Vector3 up = hit.normal.normalized;
-            Vector3 forward = Vector3.Cross(Camera.right, up).normalized;
-            Vector3 right = Vector3.Cross(up, forward).normalized;
+            Vector3 forward = Vector3.Cross(Camera.right, up).normalized;           
 
-            Debug.Log("up" + up);
-            Debug.Log("forward" + forward);
-            Debug.Log("right" + right);
-
-            Debug.Log(Quaternion.FromToRotation(forward, right));
-
-            
-
-            TurretSpawn.transform.rotation = Quaternion.LookRotation(forward, up);
+            Instantiate(Turret, hit.point, Quaternion.LookRotation(forward, up));
         } 
 
+    }
+
+    void turretPreview(){
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.transform.position, Camera.forward, out hit, Mathf.Infinity) && hit.collider.tag == "floor"){
+            Vector3 up = hit.normal.normalized;
+            Vector3 forward = Vector3.Cross(Camera.right, up).normalized;
+
+            GameObject turretPreview = Instantiate(Turret, hit.point, Quaternion.LookRotation(forward, up));
+            Color tempcolor = turretPreview.GetComponent<Renderer>().sharedMaterial.color;
+            tempcolor.a = 0.1f;
+        } 
     }
 
 
@@ -104,6 +104,10 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             PlaceTurret();
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            turretPreview();
         }
 
         // mouse move
