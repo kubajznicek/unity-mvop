@@ -3,7 +3,11 @@ guid: 8a5de45cc5ecb8e419015c7d7a50ff41
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerObject: {instanceID: 0}
+  - Camera: {instanceID: 0}
+  - CharacterController: {instanceID: 0}
+  - Turret: {fileID: 7868387085864957736, guid: 4e06f8d5f2551214cb3ea2e4e2fea628, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

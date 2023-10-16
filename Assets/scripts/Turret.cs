@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
-    public GameObject barel;
+    public Transform barel;
     private Transform lookAtPosition;
 
     // Start is called before the first frame update
